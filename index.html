@@ -3,362 +3,377 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTAX Receipt Generator</title>
+
+    <!-- html2canvas for PNG export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
+            font-family: "Segoe UI", Roboto, Arial, sans-serif;
+            max-width: 900px;
             margin: 20px auto;
             padding: 20px;
-            background-color: #BBC863;
+            background: linear-gradient(135deg, #dce6c3, #b4c97c);
         }
+
+        h2 {
+            text-align: center;
+            font-weight: 800;
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #2d3a1f;
+        }
+
         .container {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: #ffffff;
+            padding: 35px;
+            border-radius: 14px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.15);
         }
+
+        /* Form styling */
         .form-section {
             margin-bottom: 30px;
         }
-        .input-group {
-            margin-bottom: 15px;
+
+        .info-box {
+            background: #4b8f4b;
+            padding: 18px;
+            border-radius: 10px;
+            color: #fff;
+            text-align: center;
+            font-size: 17px;
+            margin-bottom: 25px;
         }
+
         label {
-            display: block;
+            font-weight: 700;
             margin-bottom: 5px;
-            font-weight: bold;
-            color: #333;
+            display: block;
+            font-size: 15px;
+            color: #2b2b2b;
         }
+
         input, textarea {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 14px;
+            padding: 10px 12px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border: 1.5px solid #c8c8c8;
+            font-size: 15px;
         }
-        textarea {
-            resize: vertical;
-            min-height: 60px;
-        }
+
         button {
-            background-color: #66D9B8;
-            color: #000;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+            padding: 12px 28px;
             font-size: 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
             margin-right: 10px;
-            font-weight: bold;
         }
-        button:hover {
-            background-color: #52c9a8;
+
+        .generate-btn {
+            background: #4b8f4b;
+            color: white;
         }
+        .generate-btn:hover {
+            background: #3e7a3e;
+        }
+
         .print-btn {
-            background-color: #333;
-            color: #fff;
+            background: #222;
+            color: white;
         }
         .print-btn:hover {
-            background-color: #555;
+            background: #444;
         }
+
+        /* Receipt */
         .receipt {
             display: none;
-            background: white;
             padding: 40px;
-            margin-top: 20px;
-            border: 2px solid #333;
+            background: #ffffff;
+            border-radius: 10px;
+            border: 1px solid #222;
+            margin-top: 25px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.18);
         }
-        .receipt.show {
-            display: block;
-        }
+
+        .receipt.show { display: block; }
+
         .receipt-header {
             text-align: center;
-            border-bottom: 2px solid #333;
-            padding-bottom: 20px;
-            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #2d3a1f;
         }
-        .receipt-header img.logo {
-            max-width: 200px;
-            margin-bottom: 15px;
-        }
+
         .receipt-header h1 {
-            margin: 10px 0;
-            font-size: 28px;
-            color: #333;
+            font-size: 32px;
+            font-weight: 900;
+            margin-bottom: 5px;
         }
+
         .receipt-header p {
-            margin: 5px 0;
-            color: #666;
+            color: #555;
+            margin: 3px;
         }
-        .receipt-details {
-            margin: 20px 0;
-        }
+
         .detail-row {
             display: flex;
             justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
+            padding: 12px 0;
+            border-bottom: 1px solid #ddd;
+            font-size: 17px;
         }
+
         .detail-label {
-            font-weight: bold;
-            color: #333;
+            font-weight: 700;
+            color: #2d3a1f;
         }
+
         .total-row {
             display: flex;
             justify-content: space-between;
-            padding: 15px 0;
             margin-top: 20px;
-            border-top: 2px solid #333;
-            font-size: 20px;
-            font-weight: bold;
+            padding-top: 18px;
+            border-top: 3px solid #2d3a1f;
+            font-size: 22px;
+            font-weight: 900;
+            color: #000;
         }
+
         .receipt-footer {
             text-align: center;
             margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
-            color: #666;
-            font-size: 14px;
+            font-size: 15px;
+            color: #555;
         }
+
         .signature-section {
-            margin-top: 40px;
+            margin-top: 30px;
             text-align: right;
         }
-        .signature-img {
-            max-width: 200px;
-            max-height: 80px;
-            margin-bottom: 5px;
-        }
+
         .signature-line {
             border-top: 1px solid #333;
             width: 200px;
             margin-left: auto;
             padding-top: 5px;
-            font-size: 12px;
-            color: #666;
+            font-size: 13px;
+            color: #555;
         }
+
         @media print {
-            body {
-                background: white;
-            }
-            .container {
-                box-shadow: none;
-            }
-            .form-section, button {
-                display: none;
-            }
+            .form-section, button { display: none !important; }
+            body { background: white; }
             .receipt {
                 display: block !important;
+                margin-top: 0;
                 border: none;
-                padding: 20px;
+                box-shadow: none;
             }
         }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <h2 style="color: #333;">MTAX Receipt Generator</h2>
-        
-        <div class="form-section">
-            <div style="background: #66D9B8; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
-                <h3 style="margin: 0; color: #000;">MTAX - Swift Rides!</h3>
-                <p style="margin: 5px 0; color: #333;">Driver: Malcom O. | Contact: 0722647409</p>
-                <p style="margin: 5px 0; color: #333;">Vehicle: KCM 707X</p>
-            </div>
-            
-            <div class="input-group">
-                <label>Upload Your Signature Image:</label>
-                <input type="file" id="signatureUpload" accept="image/*" onchange="loadSignature(event)">
-                <small style="color: #333;">Upload once - it will be saved for all future receipts</small>
-            </div>
-            
-            <div class="input-group">
-                <label>Passenger Name (Optional):</label>
-                <input type="text" id="passenger" placeholder="Passenger name">
-            </div>
-            
-            <div class="input-group">
-                <label>Pick-up Location:</label>
-                <input type="text" id="pickup" placeholder="e.g., Westlands, Nairobi">
-            </div>
-            
-            <div class="input-group">
-                <label>Drop-off Location:</label>
-                <input type="text" id="dropoff" placeholder="e.g., JKIA Airport">
-            </div>
-            
-            <div class="input-group">
-                <label>Distance (km):</label>
-                <input type="number" id="distance" placeholder="e.g., 15.5" step="0.1">
-            </div>
-            
-            <div class="input-group">
-                <label>Fare Amount (KES):</label>
-                <input type="number" id="fare" placeholder="e.g., 1500" step="0.01">
-            </div>
-            
-            <div class="input-group">
-                <label>Additional Notes (Optional):</label>
-                <textarea id="notes" placeholder="e.g., Toll fees included, Waiting time charges, etc."></textarea>
-            </div>
-            
-            <button onclick="generateReceipt()">Generate Receipt</button>
-            <button class="print-btn" onclick="window.print()">Print/Save as PDF</button>
+
+<h2>MTAX Receipt Generator</h2>
+
+<div class="container">
+
+    <div class="form-section">
+
+        <div class="info-box">
+            <strong>MTAX – Swift Rides</strong><br>
+            Driver: <b>Malcom O.</b> | Contact: 0722647409<br>
+            Vehicle: <b>KCM 707X</b>
         </div>
-        
-        <div class="receipt" id="receipt">
-            <div class="receipt-header">
-                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 350'%3E%3Crect width='500' height='350' fill='%23BBC863'/%3E%3Cg transform='translate(120, 80)'%3E%3Cellipse cx='130' cy='30' rx='35' ry='15' fill='%2366D9B8'/%3E%3Cellipse cx='130' cy='100' rx='90' ry='70' fill='%2366D9B8'/%3E%3Ccircle cx='80' cy='100' r='35' fill='%23000' stroke='%23000' stroke-width='3'/%3E%3Ccircle cx='80' cy='100' r='25' fill='%23fff'/%3E%3Ccircle cx='180' cy='100' r='35' fill='%23000' stroke='%23000' stroke-width='3'/%3E%3Ccircle cx='180' cy='100' r='25' fill='%23fff'/%3E%3Crect x='100' y='70' width='60' height='40' rx='5' fill='%23fff'/%3E%3Crect x='105' y='74' width='12' height='16' fill='%23000'/%3E%3Crect x='124' y='74' width='12' height='16' fill='%23000'/%3E%3Cpath d='M 110 95 Q 130 105 150 95' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round'/%3E%3Ctext x='130' y='145' text-anchor='middle' font-size='16' font-weight='bold' fill='%2366D9B8'%3ETAXI%3C/text%3E%3Crect x='70' y='125' width='15' height='30' rx='7' fill='%2366D9B8'/%3E%3Crect x='175' y='125' width='15' height='30' rx='7' fill='%2366D9B8'/%3E%3Ccircle cx='60' cy='155' r='18' fill='%23000'/%3E%3Ccircle cx='60' cy='155' r='12' fill='%23444'/%3E%3Ccircle cx='200' cy='155' r='18' fill='%23000'/%3E%3Ccircle cx='200' cy='155' r='12' fill='%23444'/%3E%3Cellipse cx='130' cy='158' rx='80' ry='5' fill='%23000' opacity='0.2'/%3E%3C/g%3E%3Ctext x='250' y='270' text-anchor='middle' font-size='48' font-weight='bold' fill='%23000'%3EMTAX%3C/text%3E%3Ctext x='250' y='300' text-anchor='middle' font-size='24' fill='%2366D9B8'%3ESWIFT RIDES!%3C/text%3E%3C/svg%3E" alt="MTAX Logo" class="logo">
-                <h1 id="displayBusinessName">MTAX - SWIFT RIDES!</h1>
-                <p id="displayPhone"></p>
-                <p id="displayVehicle"></p>
-            </div>
-            
-            <div class="receipt-details">
-                <div class="detail-row">
-                    <span class="detail-label">Receipt No:</span>
-                    <span id="displayReceiptNo"></span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Date:</span>
-                    <span id="displayDate"></span>
-                </div>
-                <div class="detail-row" id="passengerRow" style="display: none;">
-                    <span class="detail-label">Passenger:</span>
-                    <span id="displayPassenger"></span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Pick-up:</span>
-                    <span id="displayPickup"></span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Drop-off:</span>
-                    <span id="displayDropoff"></span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Distance:</span>
-                    <span id="displayDistance"></span>
-                </div>
-                <div class="detail-row" id="notesRow" style="display: none;">
-                    <span class="detail-label">Notes:</span>
-                    <span id="displayNotes"></span>
-                </div>
-            </div>
-            
-            <div class="total-row">
-                <span>TOTAL FARE:</span>
-                <span id="displayFare"></span>
-            </div>
-            
-            <div class="receipt-footer">
-                <p>Thank you for choosing our service!</p>
-                <p>Safe travels!</p>
-            </div>
-            
-            <div class="signature-section">
-                <img id="displaySignature" class="signature-img" style="display: none;">
-                <div class="signature-line">Authorized Signature</div>
-            </div>
-        </div>
+
+        <label>Upload Your Signature (Saved Automatically)</label>
+        <input type="file" id="signatureUpload" accept="image/*" onchange="loadSignature(event)">
+
+        <label>Passenger Name (Optional):</label>
+        <input type="text" id="passenger">
+
+        <label>Pick-up Location:</label>
+        <input type="text" id="pickup">
+
+        <label>Drop-off Location:</label>
+        <input type="text" id="dropoff">
+
+        <label>Distance (km):</label>
+        <input type="number" id="distance" step="0.1">
+
+        <label>Fare Amount (KES):</label>
+        <input type="number" id="fare" step="0.01">
+
+        <label>Additional Notes (Optional):</label>
+        <textarea id="notes"></textarea>
+
+        <button class="generate-btn" onclick="generateReceipt()">Generate Receipt</button>
+        <button class="print-btn" onclick="downloadAndPrint()">Print / Save</button>
     </div>
-    
-    <script>
-        // Auto-generate receipt number and set today's date
-        function generateReceiptNumber() {
-            const lastReceipt = localStorage.getItem('lastReceiptNumber') || 0;
-            const newReceiptNumber = parseInt(lastReceipt) + 1;
-            const formattedNumber = 'MTAX-' + String(newReceiptNumber).padStart(4, '0');
-            localStorage.setItem('lastReceiptNumber', newReceiptNumber);
-            return formattedNumber;
-        }
-        
-        // Initialize on page load
-        window.addEventListener('load', function() {
-            const savedSignature = localStorage.getItem('taxiSignature');
-            
-            if (savedSignature) {
-                document.getElementById('displaySignature').src = savedSignature;
-                document.getElementById('displaySignature').style.display = 'block';
-            }
-        });
-        
-        // Save signature image
-        function loadSignature(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const signatureData = e.target.result;
-                    localStorage.setItem('taxiSignature', signatureData);
-                    document.getElementById('displaySignature').src = signatureData;
-                    document.getElementById('displaySignature').style.display = 'block';
-                    alert('Signature saved! It will appear on all future receipts.');
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-        
-        function generateReceipt() {
-            // Auto-generate receipt number and date
-            const receiptNo = generateReceiptNumber();
-            const today = new Date();
-            const dateStr = today.toLocaleDateString('en-GB', { 
-                day: '2-digit', 
-                month: 'short', 
-                year: 'numeric' 
-            });
-            
-            // Get trip details
-            const passenger = document.getElementById('passenger').value;
-            const pickup = document.getElementById('pickup').value;
-            const dropoff = document.getElementById('dropoff').value;
-            const distance = document.getElementById('distance').value;
-            const fare = document.getElementById('fare').value;
-            const notes = document.getElementById('notes').value;
-            
-            // Validate required fields
-            if (!pickup || !dropoff || !fare) {
-                alert('Please fill in Pick-up, Drop-off, and Fare amount');
-                return;
-            }
-            
-            // Display values
-            document.getElementById('displayReceiptNo').textContent = receiptNo;
-            document.getElementById('displayDate').textContent = dateStr;
-            document.getElementById('displayPickup').textContent = pickup;
-            document.getElementById('displayDropoff').textContent = dropoff;
-            document.getElementById('displayDistance').textContent = distance ? distance + ' km' : 'N/A';
-            document.getElementById('displayFare').textContent = 'KES ' + parseFloat(fare).toFixed(2);
-            
-            // Handle optional fields
-            if (passenger) {
-                document.getElementById('passengerRow').style.display = 'flex';
-                document.getElementById('displayPassenger').textContent = passenger;
-            } else {
-                document.getElementById('passengerRow').style.display = 'none';
-            }
-            
-            if (notes) {
-                document.getElementById('notesRow').style.display = 'flex';
-                document.getElementById('displayNotes').textContent = notes;
-            } else {
-                document.getElementById('notesRow').style.display = 'none';
-            }
-            
-            // Show saved signature
-            const savedSignature = localStorage.getItem('taxiSignature');
-            if (savedSignature) {
-                document.getElementById('displaySignature').src = savedSignature;
-                document.getElementById('displaySignature').style.display = 'block';
-            }
-            
-            // Show receipt
-            document.getElementById('receipt').classList.add('show');
-            
-            // Scroll to receipt
-            document.getElementById('receipt').scrollIntoView({ behavior: 'smooth' });
-        }
-    </script>
+
+    <!-- RECEIPT -->
+    <div class="receipt" id="receipt">
+
+        <div class="receipt-header">
+            <h1>MTAX – SWIFT RIDES</h1>
+            <p>Official Taxi Receipt</p>
+        </div>
+
+        <div class="detail-row">
+            <span class="detail-label">Receipt No:</span>
+            <span id="displayReceiptNo"></span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Date:</span>
+            <span id="displayDate"></span>
+        </div>
+        <div class="detail-row" id="passengerRow" style="display:none;">
+            <span class="detail-label">Passenger:</span>
+            <span id="displayPassenger"></span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Pick-up:</span>
+            <span id="displayPickup"></span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Drop-off:</span>
+            <span id="displayDropoff"></span>
+        </div>
+
+        <div class="detail-row">
+            <span class="detail-label">Distance:</span>
+            <span id="displayDistance"></span>
+        </div>
+
+        <div class="detail-row" id="notesRow" style="display:none;">
+            <span class="detail-label">Notes:</span>
+            <span id="displayNotes"></span>
+        </div>
+
+        <div class="total-row">
+            <span>Total Fare</span>
+            <span id="displayFare"></span>
+        </div>
+
+        <div class="receipt-footer">
+            Thank you for choosing MTAX — Safe travels!
+        </div>
+
+        <div class="signature-section">
+            <img id="displaySignature" style="max-width:180px;display:none;">
+            <div class="signature-line">Authorized Signature</div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+/*** Generate sequential receipt number ***/
+function generateReceiptNumber() {
+    const last = localStorage.getItem("mtax_receipt") || 0;
+    const newNum = parseInt(last) + 1;
+    localStorage.setItem("mtax_receipt", newNum);
+    return "MTAX-" + String(newNum).padStart(4, "0");
+}
+
+/*** Load saved signature on page load ***/
+window.onload = function() {
+    const saved = localStorage.getItem("mtax_sig");
+    if (saved) {
+        document.getElementById("displaySignature").src = saved;
+        document.getElementById("displaySignature").style.display = "block";
+    }
+};
+
+/*** Save uploaded signature ***/
+function loadSignature(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        localStorage.setItem("mtax_sig", e.target.result);
+        document.getElementById("displaySignature").src = e.target.result;
+        document.getElementById("displaySignature").style.display = "block";
+        alert("Signature saved for future receipts.");
+    };
+    reader.readAsDataURL(file);
+}
+
+/*** Generate receipt ***/
+function generateReceipt() {
+
+    const pickup = pickup.value.trim();
+    const dropoff = dropoff.value.trim();
+    const fare = fare.value.trim();
+
+    if (!pickup || !dropoff || !fare) {
+        alert("Pick-up, Drop-off, and Fare are required.");
+        return;
+    }
+
+    const receiptNo = generateReceiptNumber();
+    const today = new Date().toLocaleDateString("en-GB", {
+        day: "2-digit", month: "short", year: "numeric"
+    });
+
+    document.getElementById("displayReceiptNo").textContent = receiptNo;
+    document.getElementById("displayDate").textContent = today;
+
+    const passenger = document.getElementById("passenger").value.trim();
+    if (passenger) {
+        passengerRow.style.display = "flex";
+        displayPassenger.textContent = passenger;
+    } else passengerRow.style.display = "none";
+
+    displayPickup.textContent = pickup;
+    displayDropoff.textContent = dropoff;
+
+    const dist = document.getElementById("distance").value;
+    displayDistance.textContent = dist ? dist + " km" : "N/A";
+
+    const notesVal = document.getElementById("notes").value.trim();
+    if (notesVal) {
+        notesRow.style.display = "flex";
+        displayNotes.textContent = notesVal;
+    } else notesRow.style.display = "none";
+
+    displayFare.textContent = "KES " + parseFloat(fare).toFixed(2);
+
+    document.getElementById("receipt").classList.add("show");
+    receipt.scrollIntoView({ behavior: "smooth" });
+}
+
+/*** Auto-download PNG before printing ***/
+function downloadAndPrint() {
+    const receipt = document.getElementById("receipt");
+
+    // Hide signature before screenshot
+    const sig = document.getElementById("displaySignature");
+    const prevDisplay = sig.style.display;
+    sig.style.display = "none";
+
+    html2canvas(receipt, { scale: 3 }).then(canvas => {
+
+        const link = document.createElement("a");
+        link.download = "MTAX_Receipt.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+
+        // Restore signature
+        sig.style.display = prevDisplay;
+
+        // Proceed to print
+        window.print();
+    });
+}
+</script>
+
 </body>
 </html>
