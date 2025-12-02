@@ -2,282 +2,116 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taxi Receipt</title>
 <style>
     body {
         font-family: Arial, sans-serif;
-        max-width: 800px;
-        margin: 20px auto;
+        background: #f2f2f2;
+        display: flex;
+        justify-content: center;
         padding: 20px;
-        background-color: #BBC863;
-    }
-    .container {
-        background: white;
-        padding: 30px;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
 
-    /* ----- Receipt Watermark Logo ----- */
-    .receipt {
-        display: none;
-        position: relative;
+    .receipt-container {
+        width: 420px;
         background: white;
-        padding: 40px;
-        margin-top: 20px;
-        border: 2px solid #333;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0px 0px 8px rgba(0,0,0,0.15);
+        position: relative;
         overflow: hidden;
     }
-    .receipt.show {
-        display: block;
-    }
-    .receipt::before {
+
+    /* Watermark logo */
+    .receipt-container::before {
         content: "";
-        background: url('mtax.png') center center no-repeat;
-        background-size: 60%;
-        opacity: 0.08;
+        background-image: url('mtax.png');
+        background-size: 300px;
+        background-repeat: no-repeat;
+        background-position: center;
+        opacity: 0.12; 
         position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        z-index: 0;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
     }
 
-    .receipt * {
-        position: relative;
-        z-index: 1;
-    }
-
-    .receipt-header {
+    .header {
         text-align: center;
-        border-bottom: 2px solid #333;
-        padding-bottom: 20px;
-        margin-bottom: 20px;
-    }
-
-    .receipt-header img.logo {
-        max-width: 180px;
         margin-bottom: 10px;
-    }
-
-    .receipt-header h1 {
-        margin: 0;
-        font-size: 26px;
-        color: #333;
+        font-size: 22px;
         font-weight: bold;
+        z-index: 5;
+        position: relative;
     }
 
-    .receipt-details {
-        margin: 20px 0;
-    }
-
-    .detail-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 8px 0;
-        border-bottom: 1px solid #eee;
-    }
-    .detail-label {
-        font-weight: bold;
-        color: #333;
-    }
-
-    .total-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 15px 0;
+    .details {
         margin-top: 20px;
-        border-top: 2px solid #333;
-        font-size: 20px;
+        font-size: 15px;
+        line-height: 1.6;
+        z-index: 5;
+        position: relative;
+    }
+
+    .details span {
         font-weight: bold;
     }
 
-    .receipt-footer {
-        text-align: center;
-        margin-top: 30px;
-        padding-top: 20px;
-        border-top: 1px solid #ddd;
-        color: #666;
-        font-size: 14px;
-    }
-
-    /* ----- Signature ----- */
     .signature-section {
-        margin-top: 40px;
-        text-align: right;
-    }
-    .signature-img {
-        max-width: 200px;
-    }
-    .signature-line {
-        border-top: 1px solid #333;
-        width: 200px;
-        margin-left: auto;
-        padding-top: 5px;
-        font-size: 12px;
-        color: #666;
+        margin-top: 25px;
         text-align: center;
+        z-index: 5;
+        position: relative;
     }
 
-    @media print {
-        body { background: white; }
-        .container { box-shadow: none; }
-        .form-section, button { display: none; }
-        .receipt {
-            display: block !important;
-            border: none;
-            padding: 20px;
-        }
+    .signature-section img {
+        width: 150px;
+        opacity: 0.95;
+    }
+
+    .footer {
+        margin-top: 15px;
+        text-align: center;
+        font-size: 14px;
+        color: #333;
+        z-index: 5;
+        position: relative;
+        border-top: 1px solid #ccc;
+        padding-top: 10px;
     }
 </style>
 </head>
 <body>
 
-<div class="container">
+<div class="receipt-container">
 
-    <!-- Removed MTAX Receipt Generator title -->
-
-    <div class="form-section">
-        <!-- Removed Malcolm taxi info -->
-
-        <div class="input-group">
-            <label>Passenger Name (Optional):</label>
-            <input type="text" id="passenger" placeholder="Passenger name">
-        </div>
-
-        <div class="input-group">
-            <label>Pick-up Location:</label>
-            <input type="text" id="pickup" placeholder="e.g., Westlands, Nairobi">
-        </div>
-
-        <div class="input-group">
-            <label>Drop-off Location:</label>
-            <input type="text" id="dropoff" placeholder="e.g., JKIA Airport">
-        </div>
-
-        <div class="input-group">
-            <label>Distance (km):</label>
-            <input type="number" id="distance" placeholder="e.g., 15.5" step="0.1">
-        </div>
-
-        <div class="input-group">
-            <label>Fare Amount (KES):</label>
-            <input type="number" id="fare" placeholder="e.g., 1500">
-        </div>
-
-        <div class="input-group">
-            <label>Additional Notes (Optional):</label>
-            <textarea id="notes"></textarea>
-        </div>
-
-        <button onclick="generateReceipt()">Generate Receipt</button>
-        <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+    <div class="header">
+        TAXI SERVICE RECEIPT
     </div>
 
-    <div class="receipt" id="receipt">
+    <div class="details">
+        <p><span>Receipt No:</span> RCT-00293</p>
+        <p><span>Date:</span> 2025-01-22</p>
+        <p><span>Client Name:</span> John Doe</p>
+        <p><span>Pickup Location:</span> Nairobi CBD</p>
+        <p><span>Dropoff Location:</span> Westlands</p>
+        <p><span>Total Distance:</span> 8.5 KM</p>
+        <p><span>Total Fare:</span> KES 650</p>
+    </div>
 
-        <div class="receipt-header">
-            <img src="mtax.png" class="logo">
-            <h1>MTAX – SWIFT RIDES</h1>
-        </div>
+    <div class="signature-section">
+        <p><strong>Authorized Signature</strong></p>
+        <img src="signature.png" alt="Signature">
+    </div>
 
-        <div class="receipt-details">
-            <div class="detail-row">
-                <span class="detail-label">Receipt No:</span>
-                <span id="displayReceiptNo"></span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Date:</span>
-                <span id="displayDate"></span>
-            </div>
-            <div class="detail-row" id="passengerRow" style="display:none;">
-                <span class="detail-label">Passenger:</span>
-                <span id="displayPassenger"></span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Pick-up:</span>
-                <span id="displayPickup"></span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Drop-off:</span>
-                <span id="displayDropoff"></span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Distance:</span>
-                <span id="displayDistance"></span>
-            </div>
-            <div class="detail-row" id="notesRow" style="display:none;">
-                <span class="detail-label">Notes:</span>
-                <span id="displayNotes"></span>
-            </div>
-        </div>
-
-        <div class="total-row">
-            <span>TOTAL FARE:</span>
-            <span id="displayFare"></span>
-        </div>
-
-        <div class="receipt-footer">
-            <p>Thank you for choosing MTAX.</p>
-            <p>Safe travels!</p>
-        </div>
-
-        <div class="signature-section">
-            <img src="signature.png" class="signature-img">
-            <div class="signature-line">Authorized Signature</div>
-        </div>
-
+    <div class="footer">
+        <strong>Driver: Malcolm</strong><br>
+        Contact: <strong>+254 712 345 678</strong><br>
+        Thank you for riding with us.
     </div>
 
 </div>
-
-<script>
-function generateReceiptNumber() {
-    const lastReceipt = localStorage.getItem('lastReceiptNumber') || 0;
-    const newReceipt = parseInt(lastReceipt) + 1;
-    localStorage.setItem('lastReceiptNumber', newReceipt);
-    return "MTAX-" + String(newReceipt).padStart(4, '0');
-}
-
-function generateReceipt() {
-    const receiptNo = generateReceiptNumber();
-    const today = new Date().toLocaleDateString("en-GB");
-
-    const passenger = document.getElementById("passenger").value;
-    const pickup = document.getElementById("pickup").value;
-    const dropoff = document.getElementById("dropoff").value;
-    const distance = document.getElementById("distance").value;
-    const fare = document.getElementById("fare").value;
-    const notes = document.getElementById("notes").value;
-
-    if (!pickup || !dropoff || !fare) {
-        alert("Please enter Pick-up, Drop-off and Fare.");
-        return;
-    }
-
-    document.getElementById("displayReceiptNo").textContent = receiptNo;
-    document.getElementById("displayDate").textContent = today;
-    document.getElementById("displayPickup").textContent = pickup;
-    document.getElementById("displayDropoff").textContent = dropoff;
-    document.getElementById("displayDistance").textContent = distance ? distance + " km" : "N/A";
-    document.getElementById("displayFare").textContent = "KES " + parseFloat(fare).toFixed(2);
-
-    if (passenger) {
-        passengerRow.style.display = "flex";
-        displayPassenger.textContent = passenger;
-    } else {
-        passengerRow.style.display = "none";
-    }
-
-    if (notes) {
-        notesRow.style.display = "flex";
-        displayNotes.textContent = notes;
-    } else {
-        notesRow.style.display = "none";
-    }
-
-    document.getElementById("receipt").classList.add("show");
-    document.getElementById("receipt").scrollIntoView({ behavior: "smooth" });
-}
-</script>
 
 </body>
 </html>
