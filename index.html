@@ -3,11 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>Taxi Receipt</title>
-
-<!-- jsPDF + html2canvas -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -18,6 +13,7 @@
         padding: 20px;
     }
 
+    /* Form styling */
     .form-section {
         width: 420px;
         background: white;
@@ -62,6 +58,7 @@
         margin-top: 5px;
     }
 
+    /* Receipt container */
     .receipt-container {
         width: 420px;
         background: white;
@@ -70,18 +67,22 @@
         box-shadow: 0px 0px 8px rgba(0,0,0,0.15);
         position: relative;
         overflow: hidden;
-        display: none;
+        display: none; /* Hidden until generated */
     }
 
+    /* Watermark logo */
     .receipt-container::before {
         content: "";
         background-image: url('mtax.png');
         background-size: 300px;
         background-repeat: no-repeat;
         background-position: center;
-        opacity: 0.12;
+        opacity: 0.12; 
         position: absolute;
-        inset: 0;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
     }
 
     .header {
@@ -130,6 +131,9 @@
 </head>
 <body>
 
+<!-- ============================= -->
+<!--        INPUT FORM AREA        -->
+<!-- ============================= -->
 <div class="form-section">
 
     <div class="input-group">
@@ -163,13 +167,19 @@
     </div>
 
     <button onclick="generateReceipt()">Generate Receipt</button>
-    <button onclick="downloadPDF()" class="print-btn">Download Receipt as PDF</button>
-
+    <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
 </div>
 
+
+
+<!-- ============================= -->
+<!--         RECEIPT AREA          -->
+<!-- ============================= -->
 <div class="receipt-container" id="receipt">
 
-    <div class="header">TAXI SERVICE RECEIPT</div>
+    <div class="header">
+        MTAX - SWIFT RIDES!
+    </div>
 
     <div class="details">
         <p><span>Receipt No:</span> <span id="displayReceiptNo"></span></p>
@@ -197,17 +207,19 @@
     </div>
 
     <div class="footer">
-        <strong>Driver: Malcolm</strong><br>
-        Contact: <strong>+254 712 345 678</strong><br>
-        Thank you for riding with us.
+        <strong>Driver: Malcom</strong><br>
+        Contact: <strong>+254 722 647 409</strong><br>
+        Thank you for riding with us:).
     </div>
 
 </div>
 
+
+
 <script>
 function generateReceiptNumber() {
     const lastReceipt = localStorage.getItem('lastReceiptNumber') || 0;
-    const newReceipt = parseInt(lastNumber) + 1;
+    const newReceipt = parseInt(lastReceipt) + 1;
     localStorage.setItem('lastReceiptNumber', newReceipt);
     return "RCT-" + String(newReceipt).padStart(4, '0');
 }
@@ -216,47 +228,42 @@ function generateReceipt() {
     const receiptNo = generateReceiptNumber();
     const today = new Date().toLocaleDateString("en-GB");
 
-    const passenger = passengerInput.value;
-    const pickup = pickupInput.value;
-    const dropoff = dropoffInput.value;
-    const distance = distanceInput.value;
-    const fare = fareInput.value;
-    const notes = notesInput.value;
+    const passenger = document.getElementById("passenger").value;
+    const pickup = document.getElementById("pickup").value;
+    const dropoff = document.getElementById("dropoff").value;
+    const distance = document.getElementById("distance").value;
+    const fare = document.getElementById("fare").value;
+    const notes = document.getElementById("notes").value;
 
     if (!pickup || !dropoff || !fare) {
         alert("Please enter Pick-up, Drop-off and Fare.");
         return;
     }
 
-    displayReceiptNo.textContent = receiptNo;
-    displayDate.textContent = today;
-    displayPickup.textContent = pickup;
-    displayDropoff.textContent = dropoff;
-    displayDistance.textContent = distance ? distance + " KM" : "N/A";
-    displayFare.textContent = "KES " + parseFloat(fare).toFixed(2);
+    // Fill receipt
+    document.getElementById("displayReceiptNo").textContent = receiptNo;
+    document.getElementById("displayDate").textContent = today;
+    document.getElementById("displayPickup").textContent = pickup;
+    document.getElementById("displayDropoff").textContent = dropoff;
+    document.getElementById("displayDistance").textContent = distance ? distance + " KM" : "N/A";
+    document.getElementById("displayFare").textContent = "KES " + parseFloat(fare).toFixed(2);
 
-    passengerRow.style.display = passenger ? "block" : "none";
-    displayPassenger.textContent = passenger;
+    if (passenger) {
+        passengerRow.style.display = "block";
+        displayPassenger.textContent = passenger;
+    } else {
+        passengerRow.style.display = "none";
+    }
 
-    notesRow.style.display = notes ? "block" : "none";
-    displayNotes.textContent = notes;
+    if (notes) {
+        notesRow.style.display = "block";
+        displayNotes.textContent = notes;
+    } else {
+        notesRow.style.display = "none";
+    }
 
-    receipt.style.display = "block";
-    receipt.scrollIntoView({ behavior: "smooth" });
-}
-
-async function downloadPDF() {
-    const receipt = document.getElementById("receipt");
-
-    const canvas = await html2canvas(receipt, { scale: 2 });
-    const imgData = canvas.toDataURL("image/png");
-
-    const pdf = new jspdf.jsPDF("p", "mm", "a4");
-    const width = pdf.internal.pageSize.getWidth();
-    const height = (canvas.height * width) / canvas.width;
-
-    pdf.addImage(imgData, "PNG", 0, 0, width, height);
-    pdf.save("Taxi-Receipt.pdf");
+    document.getElementById("receipt").style.display = "block";
+    document.getElementById("receipt").scrollIntoView({ behavior: "smooth" });
 }
 </script>
 
