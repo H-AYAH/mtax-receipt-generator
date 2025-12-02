@@ -1,8 +1,13 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Taxi Receipt</title>
+
+<!-- ADD REQUIRED LIBRARIES -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -13,7 +18,6 @@
         padding: 20px;
     }
 
-    /* Form styling */
     .form-section {
         width: 420px;
         background: white;
@@ -58,7 +62,6 @@
         margin-top: 5px;
     }
 
-    /* Receipt container */
     .receipt-container {
         width: 420px;
         background: white;
@@ -67,10 +70,9 @@
         box-shadow: 0px 0px 8px rgba(0,0,0,0.15);
         position: relative;
         overflow: hidden;
-        display: none; /* Hidden until generated */
+        display: none;
     }
 
-    /* Watermark logo */
     .receipt-container::before {
         content: "";
         background-image: url('mtax.png');
@@ -131,9 +133,6 @@
 </head>
 <body>
 
-<!-- ============================= -->
-<!--        INPUT FORM AREA        -->
-<!-- ============================= -->
 <div class="form-section">
 
     <div class="input-group">
@@ -167,18 +166,14 @@
     </div>
 
     <button onclick="generateReceipt()">Generate Receipt</button>
-    <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+    <button class="print-btn" onclick="downloadPDF()">Download PDF</button>
+
 </div>
 
-
-
-<!-- ============================= -->
-<!--         RECEIPT AREA          -->
-<!-- ============================= -->
 <div class="receipt-container" id="receipt">
 
     <div class="header">
-        MTAX - SWIFT RIDES!
+        MTAX - SWIFT RIDES
     </div>
 
     <div class="details">
@@ -209,11 +204,10 @@
     <div class="footer">
         <strong>Driver: Malcom</strong><br>
         Contact: <strong>+254 722 647 409</strong><br>
-        Thank you for riding with us:).
+        Thank you for riding with us :)!.
     </div>
 
 </div>
-
 
 
 <script>
@@ -240,7 +234,6 @@ function generateReceipt() {
         return;
     }
 
-    // Fill receipt
     document.getElementById("displayReceiptNo").textContent = receiptNo;
     document.getElementById("displayDate").textContent = today;
     document.getElementById("displayPickup").textContent = pickup;
@@ -264,6 +257,24 @@ function generateReceipt() {
 
     document.getElementById("receipt").style.display = "block";
     document.getElementById("receipt").scrollIntoView({ behavior: "smooth" });
+}
+
+
+/* =============================== */
+/*  ADDING YOUR EXACT FUNCTION     */
+/* =============================== */
+async function downloadPDF() {
+    const receipt = document.getElementById("receipt");
+
+    const canvas = await html2canvas(receipt, { scale: 2 });
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jspdf.jsPDF("p", "mm", "a4");
+    const width = pdf.internal.pageSize.getWidth();
+    const height = (canvas.height * width) / canvas.width;
+
+    pdf.addImage(imgData, "PNG", 0, 0, width, height);
+    pdf.save("Taxi-Receipt.pdf");
 }
 </script>
 
